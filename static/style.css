@@ -1,0 +1,97 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #888888; /* cinza do fundo */
+  font-family: monospace;
+  font-size: 20px; /* Fonte base maior */
+}
+
+.container {
+  background-color: #000000; /* fundo preto */
+  width: 95%;
+  max-width: 1400px;
+  margin: 60px auto;
+  border-radius: 40px;
+  padding: 60px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.text-areas {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 40px;
+}
+
+textarea {
+  width: 100%;
+  height: 400px; /* Altura aumentada */
+  padding: 20px;
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  resize: none;
+  font-family: monospace;
+  font-size: 18px; /* Fonte maior */
+}
+
+.middle-button {
+  margin: 0 auto;
+}
+
+.middle-button button {
+  padding: 15px 30px; /* Botão maior */
+  font-size: 18px;
+  border-radius: 20px;
+  border: none;
+  background-color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls .row {
+  display: flex;
+  gap: 15px;
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 30px;
+}
+
+.controls button {
+  padding: 10px 20px;
+  font-size: 16px; /* Fonte maior nos botões */
+  border: 2px solid #000;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.resumo-box {
+  width: 100%;
+  height: 400px;
+  padding: 20px;
+  background-color: #ffffff;
+  color: #000000;
+  font-family: monospace;
+  font-size: 18px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  border-radius: 8px;
+}
+
+.controls button.active {
+  background-color: #333333; /* Cor escura para o botão ativo */
+  color: #ffffff; /* Texto branco para o botão ativo */
+}
