@@ -30,6 +30,13 @@
     <div class="middle-button">
       <button onclick="resumirTexto()">Resumir →</button>
     </div>
+    <div class="file-upload-container">
+      <span>OU</span>
+      <label for="pdfUpload" class="file-upload-label">
+        Envie um PDF
+      </label>
+      <input type="file" id="pdfUpload" onchange="resumirPDF()" accept=".pdf">
+    </div>
     <div class="controls">
       <div class="row">
         <button onclick="setFormato('Parágrafos', this)">Parágrafos</button>
@@ -66,6 +73,55 @@
 }
     function aplicarNegrito(texto) {
       return texto.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+    }
+// Adicione esta função dentro da sua tag <script>
+    async function resumirPDF() {
+        const fileInput = document.getElementById('pdfUpload');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            return; // Nenhum ficheiro selecionado
+        }
+
+        const outputBox = document.getElementById('outputResumo');
+        const uploadLabel = document.querySelector('.file-upload-label');
+        const originalLabelText = uploadLabel.innerText;
+
+        // Criar um FormData para enviar o ficheiro e as opções
+        const formData = new FormData();
+        formData.append('pdf_file', file);
+        formData.append('formato', formatoSelecionado);
+        formData.append('detalhe', detalheSelecionado);
+
+        // Feedback visual de carregamento
+        uploadLabel.innerText = "Enviando...";
+        outputBox.innerHTML = "Aguarde, a IA está a ler e a processar o seu PDF...";
+
+        try {
+            const response = await fetch('/resumir-pdf', {
+                method: 'POST',
+                body: formData  // Não definimos 'Content-Type', o navegador faz isso por nós com FormData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                const resumoFormatado = aplicarNegrito(data.resumo || "Ocorreu um erro.");
+                outputBox.innerHTML = resumoFormatado;
+            } else {
+                // Se o servidor retornar um erro (ex: formato inválido)
+                outputBox.innerText = data.erro || 'Ocorreu um erro desconhecido.';
+            }
+
+        } catch (error) {
+            console.error("Falha na requisição:", error);
+            outputBox.innerHTML = "Não foi possível conectar ao servidor. Por favor, tente novamente.";
+        } finally {
+            // Restaurar o botão
+            uploadLabel.innerText = originalLabelText;
+            // Limpar o input para permitir o re-envio do mesmo ficheiro
+            fileInput.value = ""; 
+        }
     }
 
     async function resumirTexto() {

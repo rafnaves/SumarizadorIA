@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
-import google.generativeai as genai  # <- use este import
+import google.generativeai as genai  
+import fitz
 
 
 app = Flask(__name__)
@@ -11,9 +12,9 @@ api_key = os.getenv("GOOGLE_API_KEY")
 if not api_key:
     raise ValueError("GOOGLE_API_KEY não encontrada no .env")
 
-genai.configure(api_key=api_key)  # <- essa linha só funciona com o import certo
+genai.configure(api_key=api_key)  
 
-model = genai.GenerativeModel('gemini-2.5-flash')  # <- usa a variável 'genai' com o modelo
+model = genai.GenerativeModel('gemini-2.5-flash')  
 
 
 def montagem_prompt(texto, formato, detalhe):
@@ -75,6 +76,51 @@ def resumir():
     prompt = montagem_prompt(texto, formato, detalhe)
     response = model.generate_content(prompt)
     return jsonify({"resumo": response.text})
+
+@app.route('/resumir-pdf', methods=['POST'])
+def resumir_pdf():
+    # 1. Verificar se o ficheiro foi enviado
+    if 'pdf_file' not in request.files:
+        return jsonify({"erro": "Nenhum ficheiro PDF enviado"}), 400
+
+    file = request.files['pdf_file']
+
+    # 2. Verificar se o nome do ficheiro está vazio
+    if file.filename == '':
+        return jsonify({"erro": "Nenhum ficheiro selecionado"}), 400
+    
+    # 3. Verificar se o ficheiro é um PDF
+    if file and file.filename.lower().endswith('.pdf'):
+        try:
+            # 4. Ler o conteúdo do PDF em memória
+            pdf_document = fitz.open(stream=file.read(), filetype="pdf")
+            
+            # 5. Extrair o texto de todas as páginas
+            texto_extraido = ""
+            for page_num in range(len(pdf_document)):
+                page = pdf_document.load_page(page_num)
+                texto_extraido += page.get_text()
+            
+            pdf_document.close()
+
+            # Se não houver texto, avise o utilizador
+            if not texto_extraido.strip():
+                 return jsonify({"resumo": "O PDF parece estar vazio ou contém apenas imagens."})
+
+            # 6. Obter opções de resumo e montar o prompt (reaproveitando sua função!)
+            formato = request.form.get("formato")
+            detalhe = request.form.get("detalhe")
+            
+            prompt = montagem_prompt(texto_extraido, formato, detalhe)
+            response = model.generate_content(prompt)
+            return jsonify({"resumo": response.text})
+
+        except Exception as e:
+            print(f"Erro ao processar PDF: {e}") # Log do erro no servidor
+            return jsonify({"erro": "Falha ao ler o ficheiro PDF."}), 500
+
+    return jsonify({"erro": "Formato de ficheiro inválido. Por favor, envie um PDF."}), 400
+
 
 
 if __name__ == '__main__':
