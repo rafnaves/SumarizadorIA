@@ -2,3 +2,4 @@ flask
 python-dotenv
 google-generativeai
 PyMuPDF
+pip freeze > requirements.txt
