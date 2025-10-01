@@ -3,8 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/svg" href="{{ url_for('static', filename='images/meu-icone.png.svg') }}">
-  <title>Resumidor de Texto Acadêmico</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.svg') }}">  <title>Resumidor de Texto Acadêmico</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <style>
     .resumo-box {
@@ -23,20 +22,6 @@
 </head>
 <body>
   <div class="container">
-    <div class="text-areas">
-      <textarea id="inputTexto" placeholder="| Cole aqui o artigo ou o abstract para resumir..."></textarea>
-      <div id="outputResumo" class="resumo-box">Resumo Estruturado aparecerá aqui...</div>
-    </div>
-    <div class="middle-button">
-      <button onclick="resumirTexto()">Resumir →</button>
-    </div>
-    <div class="file-upload-container">
-      <span>OU</span>
-      <label for="pdfUpload" class="file-upload-label">
-        Envie um PDF
-      </label>
-      <input type="file" id="pdfUpload" onchange="resumirPDF()" accept=".pdf">
-    </div>
 
     <div class="controls">
       <div class="row">
@@ -50,6 +35,28 @@
         <button onclick="setDetalhe('critico', this)">Crítico</button>
       </div>
     </div>
+
+    <div class="text-areas">
+      <textarea id="inputTexto" placeholder="| Cole aqui o artigo ou o abstract para resumir..."></textarea>
+      <div id="outputResumo" class="resumo-box">Resumo Estruturado aparecerá aqui...</div>
+    </div>
+    
+...
+    <div class="actions-container">
+
+      <div class="middle-button">
+        <button onclick="resumirTexto()">Resumir →</button>
+      </div>
+      
+      <div class="file-upload-container">
+        <label for="pdfUpload" class="file-upload-label">
+          Envie um PDF
+        </label>
+        <input type="file" id="pdfUpload" onchange="resumirPDF()" accept=".pdf">
+      </div>
+
+    </div>
+
   </div>
 
   <script>
@@ -74,9 +81,7 @@
     function aplicarNegrito(texto) {
       return texto.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
     }
-
-    // A função resumirTexto() não precisa de mudanças, pois ela já envia as
-    // variáveis 'formatoSelecionado' e 'detalheSelecionado' que estamos a usar.
+    
     async function resumirTexto() {
       const texto = document.getElementById('inputTexto').value;
       const outputBox = document.getElementById('outputResumo');
@@ -115,7 +120,6 @@
       }
     }
     
-    // A função resumirPDF() também continua a funcionar perfeitamente.
     async function resumirPDF() {
         const fileInput = document.getElementById('pdfUpload');
         const file = fileInput.files[0];
@@ -134,7 +138,6 @@
         formData.append('detalhe', detalheSelecionado);
 
         uploadLabel.innerText = "Enviando...";
-        // Limpa a caixa de texto da esquerda enquanto processa
         document.getElementById('inputTexto').value = "Extraindo texto do PDF...";
         outputBox.innerHTML = "Aguarde, a IA está a processar o seu PDF...";
 
@@ -147,15 +150,10 @@
             const data = await response.json();
 
             if (response.ok) {
-                // ===== LINHA ADICIONADA =====
-                // Coloca o texto extraído do PDF na caixa da esquerda.
                 document.getElementById('inputTexto').value = data.texto_extraido || "Não foi possível extrair o texto do PDF.";
-
-                // Atualiza a caixa da direita com o resumo formatado.
                 const resumoFormatado = aplicarNegrito(data.resumo || "Ocorreu um erro.");
                 outputBox.innerHTML = resumoFormatado;
             } else {
-                // Se der erro, limpa a caixa da esquerda também
                 document.getElementById('inputTexto').value = "";
                 outputBox.innerText = data.erro || 'Ocorreu um erro desconhecido.';
             }
@@ -165,8 +163,6 @@
             outputBox.innerHTML = "Não foi possível conectar ao servidor. Por favor, tente novamente.";
         } finally {
             uploadLabel.innerText = originalLabelText;
-            // Não limpa mais o input de ficheiro aqui, para o utilizador ver qual foi enviado.
-            // fileInput.value = ""; 
         }
     }
   </script>
