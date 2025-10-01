@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.svg') }}">  <title>Resumidor de Texto Acadêmico</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .resumo-box {
+      width: 100%;
+      height: 400px;
+      padding: 20px;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: monospace;
+      font-size: 18px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="controls">
+      <div class="row">
+        <button onclick="setFormato('Extrativo', this)">Extrativo</button>
+        <button onclick="setFormato('Parágrafos', this)" class="active">Abstrativo (Parágrafos)</button>
+        <button onclick="setFormato('Tópicos', this)">Abstrativo (Tópicos)</button>
+      </div>
+      <div class="row">
+        <button onclick="setDetalhe('indicativo', this)">Indicativo</button>
+        <button onclick="setDetalhe('informativo', this)" class="active">Informativo</button>
+        <button onclick="setDetalhe('critico', this)">Crítico</button>
+      </div>
+    </div>
+
+    <div class="text-areas">
+      <textarea id="inputTexto" placeholder="| Cole aqui o artigo ou o abstract para resumir..."></textarea>
+      <div id="outputResumo" class="resumo-box">Resumo Estruturado aparecerá aqui...</div>
+    </div>
+    
+...
+    <div class="actions-container">
+
+      <div class="middle-button">
+        <button onclick="resumirTexto()">Resumir →</button>
+      </div>
+      
+      <div class="file-upload-container">
+        <label for="pdfUpload" class="file-upload-label">
+          Envie um PDF
+        </label>
+        <input type="file" id="pdfUpload" onchange="resumirPDF()" accept=".pdf">
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Valores iniciais atualizados para os novos padrões
+    let formatoSelecionado = 'Parágrafos';
+    let detalheSelecionado = 'informativo';
+
+    function setFormato(f, element) {
+      formatoSelecionado = f;
+      // Esta lógica para destacar o botão ativo continua perfeita
+      document.querySelectorAll('.controls .row:first-child button').forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
+    }
+
+    function setDetalhe(d, element) {
+      detalheSelecionado = d;
+      // E esta também
+      document.querySelectorAll('.controls .row:last-child button').forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
+    }
+
+    function aplicarNegrito(texto) {
+      return texto.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+    }
+    
+    async function resumirTexto() {
+      const texto = document.getElementById('inputTexto').value;
+      const outputBox = document.getElementById('outputResumo');
+      const resumirBtn = document.querySelector('.middle-button button');
+
+      if (!texto.trim()) {
+        outputBox.innerText = "Por favor, insira um texto para resumir.";
+        return;
+      }
+
+      resumirBtn.disabled = true;
+      resumirBtn.innerText = "Resumindo...";
+      outputBox.innerHTML = "Aguarde, a IA está a processar o seu pedido...";
+
+      try {
+        const response = await fetch('/resumir', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ texto, formato: formatoSelecionado, detalhe: detalheSelecionado })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erro do servidor: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const resumoFormatado = aplicarNegrito(data.resumo || "Ocorreu um erro ao gerar o resumo.");
+        outputBox.innerHTML = resumoFormatado;
+
+      } catch (error) {
+        console.error("Falha na requisição:", error);
+        outputBox.innerHTML = "Não foi possível conectar ao servidor. Por favor, tente novamente mais tarde.";
+      } finally {
+        resumirBtn.disabled = false;
+        resumirBtn.innerText = "Resumir →";
+      }
+    }
+    
+    async function resumirPDF() {
+        const fileInput = document.getElementById('pdfUpload');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            return; 
+        }
+
+        const outputBox = document.getElementById('outputResumo');
+        const uploadLabel = document.querySelector('.file-upload-label');
+        const originalLabelText = uploadLabel.innerText;
+
+        const formData = new FormData();
+        formData.append('pdf_file', file);
+        formData.append('formato', formatoSelecionado);
+        formData.append('detalhe', detalheSelecionado);
+
+        uploadLabel.innerText = "Enviando...";
+        document.getElementById('inputTexto').value = "Extraindo texto do PDF...";
+        outputBox.innerHTML = "Aguarde, a IA está a processar o seu PDF...";
+
+        try {
+            const response = await fetch('/resumir-pdf', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById('inputTexto').value = data.texto_extraido || "Não foi possível extrair o texto do PDF.";
+                const resumoFormatado = aplicarNegrito(data.resumo || "Ocorreu um erro.");
+                outputBox.innerHTML = resumoFormatado;
+            } else {
+                document.getElementById('inputTexto').value = "";
+                outputBox.innerText = data.erro || 'Ocorreu um erro desconhecido.';
+            }
+
+        } catch (error) {
+            console.error("Falha na requisição:", error);
+            outputBox.innerHTML = "Não foi possível conectar ao servidor. Por favor, tente novamente.";
+        } finally {
+            uploadLabel.innerText = originalLabelText;
+        }
+    }
+  </script>
+</body>
+</html>
