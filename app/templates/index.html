@@ -60,13 +60,11 @@
   </div>
 
   <script>
-    // Valores iniciais atualizados para os novos padrões
     let formatoSelecionado = 'Parágrafos';
     let detalheSelecionado = 'informativo';
 
     function setFormato(f, element) {
       formatoSelecionado = f;
-      // Esta lógica para destacar o botão ativo continua perfeita
       document.querySelectorAll('.controls .row:first-child button').forEach(btn => btn.classList.remove('active'));
       element.classList.add('active');
     }

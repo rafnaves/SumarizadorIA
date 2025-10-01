@@ -9,16 +9,11 @@ class ResumidorService:
         load_dotenv()
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
-            # Corrigido para a chave correta que você usou no __init__
             raise ValueError("GOOGLE_API_KEY não encontrada no .env")
         
         genai.configure(api_key=api_key)
-        # Nota: O modelo 'gemini-2.5-flash' não existe. 
-        # Vou manter o 'gemini-1.5-flash' que estava funcionando.
         self.model = genai.GenerativeModel('gemini-2.5-flash')
 
-    # CORREÇÃO 1: Adicionado "self" como primeiro parâmetro.
-    # E renomeado para _montagem_prompt para indicar uso interno.
     def _montagem_prompt(self, texto, formato, detalhe):
         """
         Monta um prompt acadêmico especializado.
@@ -65,7 +60,6 @@ Primeiro, analise o texto para identificar as seguintes seções chave: Objetivo
         if not all([texto, formato, detalhe]):
             raise ValueError("Dados incompletos para gerar resumo.")
         
-        # CORREÇÃO 2: A chamada agora usa o nome corrigido do método.
         prompt = self._montagem_prompt(texto, formato, detalhe)
         response = self.model.generate_content(prompt)
         return response.text

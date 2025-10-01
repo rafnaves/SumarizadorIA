@@ -1,18 +1,17 @@
 body {
   margin: 0;
-  padding: 20px; /* Adiciona uma pequena margem interna nas bordas da janela */
-  box-sizing: border-box; /* Garante que o padding não cause overflow */
+  padding: 20px; 
+  box-sizing: border-box; 
   background-color: #4B4E53;
   background-image: linear-gradient(147deg, #4B4E53 0%, #000000 74%);
 
   font-family: monospace;
   font-size: 20px;
 
-  /* --- Mágica da Centralização --- */
   display: flex;
-  min-height: 100vh; /* Garante que o body ocupe no mínimo a altura total da tela */
-  align-items: center; /* Centraliza o .container verticalmente */
-  justify-content: center; /* Centraliza o .container horizontalmente */
+  min-height: 100vh; 
+  align-items: center; 
+  justify-content: center; 
 }
 
 .container {
@@ -21,7 +20,7 @@ body {
   
   width: 95%;
   max-width: 1400px;
-  margin: auto; /* O 'auto' aqui, combinado com o flex no body, ajuda na centralização */
+  margin: auto; 
   border-radius: 40px;
   padding: 30px; 
   display: flex;
@@ -35,7 +34,7 @@ body {
   justify-content: space-between;
   width: 100%;
   gap: 40px;
-  flex-grow: 1;  /* <-- ADICIONE ESTA LINHA MÁGICA */
+  flex-grow: 1;  
   min-height: 0;
   
 
@@ -49,16 +48,16 @@ textarea {
   border: none;
   resize: none;
   font-family: monospace;
-  font-size: 18px; /* Fonte maior */
+  font-size: 18px; 
   border-radius: 8px;
-  height: 300px; /* Reduzimos a altura */
+  height: 300px; 
 
 
 }
 
 
 .middle-button button {
-  padding: 15px 30px; /* Botão maior */
+  padding: 15px 30px; 
   font-size: 18px;
   border-radius: 20px;
   border: none;
@@ -69,14 +68,13 @@ textarea {
 
 .controls {
   display: flex;
-  flex-direction: row; /* Coloca as duas .row lado a lado */
+  flex-direction: row; 
   gap: 15px;
   width: 100%;
   justify-content: center;
   align-items: center;
 }
 
-/* 2. O container de cada fileira, que organiza os BOTÕES dentro dela */
 .controls .row {
   display: flex;
   gap: 15px;
@@ -86,7 +84,7 @@ textarea {
 
 .controls button {
   padding: 10px 20px;
-  font-size: 16px; /* Fonte maior nos botões */
+  font-size: 16px; 
   border: 2px solid #000;
   border-radius: 8px;
   background-color: rgb(90, 89, 89);
@@ -103,16 +101,15 @@ textarea {
   overflow-y: auto;
   white-space: pre-wrap;
   border-radius: 8px;
-  height: 300px; /* Reduzimos a altura */
+  height: 300px; 
 
 }
 
 .controls button.active {
-  background-color: #ffffff; /* Cor escura para o botão ativo */
-  color: #000000; /* Texto branco para o botão ativo */
+  background-color: #ffffff; 
+  color: #000000; 
 }
 
-/* Estilos para o novo botão de upload de PDF */
 .file-upload-container {
   display: flex;
   flex-direction: column;
@@ -137,16 +134,14 @@ textarea {
   background-color: #dddddd;
 }
 
-/* Esconde o input de ficheiro padrão, pois já temos o nosso label estilizado */
 #pdfUpload {
   display: none;
 }
 
-/* Estilo para o novo container dos botões de ação */
 .actions-container {
   display: flex;
   justify-content: center;
-  align-items: baseline; /* 'baseline' vai alinhar os botões pelo texto */
+  align-items: baseline; 
   gap: 30px;
   width: 100%;
 }

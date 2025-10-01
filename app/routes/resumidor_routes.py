@@ -34,7 +34,6 @@ def resumir():
     resumo_gerado = resumidor_service.gerar_resumo(texto, formato, detalhe)
     return jsonify({"resumo": resumo_gerado, "texto_extraido": texto})
 
-    # CORRIGIDO: Retornar a variável "texto" que contém o input original
     return jsonify({"resumo": response.text, "texto_extraido": texto})
 
 @resumidor_bp.route('/resumir-pdf', methods=['POST'])
@@ -49,7 +48,6 @@ def resumir_pdf():
     
     if file and file.filename.lower().endswith('.pdf'):
         try:
-            # GARANTA que você está usando a variável 'resumidor_service' (com 's' minúsculo)
             texto_extraido = resumidor_service.extrair_texto_pdf(file.stream)
 
             if not texto_extraido.strip():
@@ -61,7 +59,6 @@ def resumir_pdf():
             formato = request.form.get("formato")
             detalhe = request.form.get("detalhe")
 
-            # GARANTA que a chamada aqui também usa a instância 'resumidor_service'
             resumo_gerado = resumidor_service.gerar_resumo(texto_extraido, formato, detalhe)
 
             return jsonify({"resumo": resumo_gerado, "texto_extraido": texto_extraido})
@@ -71,6 +68,5 @@ def resumir_pdf():
         except ValueError as e:
             return jsonify({"erro": str(e)}), 400
         except Exception as e:
-            # A mensagem de erro que você viu no log provavelmente foi impressa por esta linha
             print(f"Erro ao processar PDF: {e}")
             return jsonify({"erro": "Ocorreu um erro interno no servidor."}), 500
