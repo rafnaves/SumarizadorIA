@@ -21,6 +21,8 @@
   </style>
 </head>
 <body>
+  <canvas id="canvas-background"></canvas>
+
   <div class="container">
 
     <div class="controls">
@@ -41,25 +43,19 @@
       <div id="outputResumo" class="resumo-box">Resumo Estruturado aparecerá aqui...</div>
     </div>
     
-...
     <div class="actions-container">
-
       <div class="middle-button">
         <button onclick="resumirTexto()">Resumir →</button>
       </div>
-      
       <div class="file-upload-container">
         <label for="pdfUpload" class="file-upload-label">
           Envie um PDF
         </label>
         <input type="file" id="pdfUpload" onchange="resumirPDF()" accept=".pdf">
       </div>
-
     </div>
 
-  </div>
-
-  <script>
+  </div> <script>
     let formatoSelecionado = 'Parágrafos';
     let detalheSelecionado = 'informativo';
 
@@ -71,7 +67,6 @@
 
     function setDetalhe(d, element) {
       detalheSelecionado = d;
-      // E esta também
       document.querySelectorAll('.controls .row:last-child button').forEach(btn => btn.classList.remove('active'));
       element.classList.add('active');
     }
@@ -164,5 +159,27 @@
         }
     }
   </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/granim/2.0.0/granim.min.js"></script>
+
+  <script>
+    var granimInstance = new Granim({
+        element: '#canvas-background',
+        direction: 'diagonal',
+        isPausedWhenNotInView: true,
+        states : {
+            "default-state": {
+                gradients: [
+                    ['#4B4E53', '#222222'],
+                    ['#222222', '#000000'],
+                    ['#000000', '#4B4E53']
+                ],
+                transitionSpeed: 12000 
+            }
+        }
+    });
+  </script>
+
 </body>
+</html>
 </html>
